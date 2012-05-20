@@ -850,6 +850,7 @@ status_t SurfaceTexture::setScalingMode(int mode) {
 }
 
 #ifdef DECIDE_TEXTURE_TARGET
+status_t SurfaceTexture::updateTexImage() { return updateTexImage(false); }
 status_t SurfaceTexture::updateTexImage(bool isComposition) {
 #else
 status_t SurfaceTexture::updateTexImage() {
