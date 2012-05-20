@@ -511,7 +511,7 @@ private:
     // glCopyTexSubImage to read from the texture.  This is a hack to work
     // around a GL driver limitation on the number of FBO attachments, which the
     // browser's tile cache exceeds.
-#ifdef QCOM_HARDWARE
+#ifdef DECIDE_TEXTURE_TARGET
     GLenum mTexTarget;
 #else
     const GLenum mTexTarget;
