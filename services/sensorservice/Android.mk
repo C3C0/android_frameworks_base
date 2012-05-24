@@ -5,6 +5,7 @@ LOCAL_SRC_FILES:= \
 	GravitySensor.cpp \
 	LinearAccelerationSensor.cpp \
 	RotationVectorSensor.cpp \
+    RotationVectorSensor2.cpp \
     SensorService.cpp \
     SensorInterface.cpp \
     SensorDevice.cpp \

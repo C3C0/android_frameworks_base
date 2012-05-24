@@ -39,6 +39,7 @@
 #include "GravitySensor.h"
 #include "LinearAccelerationSensor.h"
 #include "RotationVectorSensor.h"
+#include "RotationVectorSensor2.h"
 
 namespace android {
 // ---------------------------------------------------------------------------
@@ -57,36 +58,54 @@ void SensorService::onFirstRef()
     SensorDevice& dev(SensorDevice::getInstance());
 
     if (dev.initCheck() == NO_ERROR) {
-        uint32_t virtualSensorsNeeds =
-                (1<<SENSOR_TYPE_GRAVITY) |
-                (1<<SENSOR_TYPE_LINEAR_ACCELERATION) |
-                (1<<SENSOR_TYPE_ROTATION_VECTOR);
         sensor_t const* list;
-        int count = dev.getSensorList(&list);
-        mLastEventSeen.setCapacity(count);
-        for (int i=0 ; i<count ; i++) {
-            registerSensor( new HardwareSensor(list[i]) );
-            switch (list[i].type) {
-                case SENSOR_TYPE_GRAVITY:
-                case SENSOR_TYPE_LINEAR_ACCELERATION:
-                case SENSOR_TYPE_ROTATION_VECTOR:
-                    virtualSensorsNeeds &= ~(1<<list[i].type);
-                    break;
+        ssize_t count = dev.getSensorList(&list);
+        if (count > 0) {
+            ssize_t orientationIndex = -1;
+            bool hasGyro = false;
+            uint32_t virtualSensorsNeeds =
+                    (1<<SENSOR_TYPE_GRAVITY) |
+                    (1<<SENSOR_TYPE_LINEAR_ACCELERATION) |
+                    (1<<SENSOR_TYPE_ROTATION_VECTOR);
+
+            mLastEventSeen.setCapacity(count);
+            for (ssize_t i=0 ; i<count ; i++) {
+                registerSensor( new HardwareSensor(list[i]) );
+                switch (list[i].type) {
+                    case SENSOR_TYPE_ORIENTATION:
+                        orientationIndex = i;
+                        break;
+                    case SENSOR_TYPE_GYROSCOPE:
+                        hasGyro = true;
+                        break;
+                    case SENSOR_TYPE_GRAVITY:
+                    case SENSOR_TYPE_LINEAR_ACCELERATION:
+                    case SENSOR_TYPE_ROTATION_VECTOR:
+                        virtualSensorsNeeds &= ~(1<<list[i].type);
+                        break;
+                }
             }
-        }
 
-        if (virtualSensorsNeeds & (1<<SENSOR_TYPE_GRAVITY)) {
-            registerVirtualSensor( new GravitySensor(list, count) );
-        }
-        if (virtualSensorsNeeds & (1<<SENSOR_TYPE_LINEAR_ACCELERATION)) {
-            registerVirtualSensor( new LinearAccelerationSensor(list, count) );
-        }
-        if (virtualSensorsNeeds & (1<<SENSOR_TYPE_ROTATION_VECTOR)) {
-            registerVirtualSensor( new RotationVectorSensor(list, count) );
-        }
+            if (hasGyro) {
+                // Always instantiate Android's virtual sensors. Since they are
+                // instantiated behind sensors from the HAL, they won't
+                // interfere with applications, unless they looks specifically
+                // for them (by name).
 
-        run("SensorService", PRIORITY_URGENT_DISPLAY);
-        mInitCheck = NO_ERROR;
+                registerVirtualSensor( new RotationVectorSensor(list, count) );
+                registerVirtualSensor( new GravitySensor(list, count) );
+                registerVirtualSensor( new LinearAccelerationSensor(list, count) );
+            } else if (orientationIndex != -1) {
+                // If we don't have a gyro but have a orientation sensor from
+                // elsewhere, we can compute rotation vector from that.
+                // (Google Maps expects rotation vector sensor to exist.)
+
+                registerVirtualSensor( &RotationVectorSensor2::getInstance() );
+            }
+
+            run("SensorService", PRIORITY_URGENT_DISPLAY);
+            mInitCheck = NO_ERROR;
+        }
     }
 }
 
@@ -184,13 +203,19 @@ bool SensorService::threadLoop()
 
         // handle virtual sensors
         if (count && vcount) {
+            sensors_event_t const * const event = buffer;
             const DefaultKeyedVector<int, SensorInterface*> virtualSensors(
                     getActiveVirtualSensors());
             const size_t activeVirtualSensorCount = virtualSensors.size();
             if (activeVirtualSensorCount) {
                 size_t k = 0;
+                RotationVectorSensor2& rv2(RotationVectorSensor2::getInstance());
+                if (rv2.isEnabled()) {
+                    for (size_t i=0 ; i<size_t(count) ; i++) {
+                        rv2.process(event[i]);
+                    }
+                }
                 for (size_t i=0 ; i<size_t(count) ; i++) {
-                    sensors_event_t const * const event = buffer;
                     for (size_t j=0 ; j<activeVirtualSensorCount ; j++) {
                         sensors_event_t out;
                         if (virtualSensors.valueAt(j)->process(&out, event[i])) {
