@@ -46,7 +46,6 @@ public class QualcommSharedRIL extends RIL implements CommandsInterface {
     protected IccHandler mIccHandler;
     protected String mAid;
     protected boolean mUSIM = false;
-    protected int mSetPreferredNetworkType;
     protected String[] mLastDataIface = new String[20];
     boolean RILJ_LOGV = true;
     boolean RILJ_LOGD = true;
@@ -60,6 +59,7 @@ public class QualcommSharedRIL extends RIL implements CommandsInterface {
 
     public QualcommSharedRIL(Context context, int networkMode, int cdmaSubscription) {
         super(context, networkMode, cdmaSubscription);
+        mSetPreferredNetworkType = -1;
     }
 
     @Override public void
@@ -213,30 +213,55 @@ public class QualcommSharedRIL extends RIL implements CommandsInterface {
 
         boolean oldRil = needsOldRilFeature("datacall");
 
-        if (!oldRil)
-           return super.getDataCallState(p, version);
+        if (!oldRil && version < 5) {
+            return super.getDataCallState(p, version);
+        } else if (!oldRil) {
+            dataCall.version = version;
+            dataCall.status = p.readInt();
+            dataCall.suggestedRetryTime = p.readInt();
+            dataCall.cid = p.readInt();
+            dataCall.active = p.readInt();
+            dataCall.type = p.readString();
+            dataCall.ifname = p.readString();
+            if ((dataCall.status == DataConnection.FailCause.NONE.getErrorCode()) &&
+                    TextUtils.isEmpty(dataCall.ifname) && dataCall.active != 0) {
+              throw new RuntimeException("getDataCallState, no ifname");
+            }
+            String addresses = p.readString();
+            if (!TextUtils.isEmpty(addresses)) {
+                dataCall.addresses = addresses.split(" ");
+            }
+            String dnses = p.readString();
+            if (!TextUtils.isEmpty(dnses)) {
+                dataCall.dnses = dnses.split(" ");
+            }
+            String gateways = p.readString();
+            if (!TextUtils.isEmpty(gateways)) {
+                dataCall.gateways = gateways.split(" ");
+            }
+        } else {
+            dataCall.version = 4; // was dataCall.version = version;
+            dataCall.cid = p.readInt();
+            dataCall.active = p.readInt();
+            dataCall.type = p.readString();
+            dataCall.ifname = mLastDataIface[dataCall.cid];
+            p.readString(); // skip APN
 
-        dataCall.version = 4; // was dataCall.version = version;
-        dataCall.cid = p.readInt();
-        dataCall.active = p.readInt();
-        dataCall.type = p.readString();
-        dataCall.ifname = mLastDataIface[dataCall.cid];
-        p.readString(); // skip APN
+            if (TextUtils.isEmpty(dataCall.ifname)) {
+                dataCall.ifname = mLastDataIface[0];
+            }
 
-        if (TextUtils.isEmpty(dataCall.ifname)) {
-            dataCall.ifname = mLastDataIface[0];
+            String addresses = p.readString();
+            if (!TextUtils.isEmpty(addresses)) {
+                dataCall.addresses = addresses.split(" ");
+            }
+            p.readInt(); // RadioTechnology
+            p.readInt(); // inactiveReason
+
+            dataCall.dnses = new String[2];
+            dataCall.dnses[0] = SystemProperties.get("net."+dataCall.ifname+".dns1");
+            dataCall.dnses[1] = SystemProperties.get("net."+dataCall.ifname+".dns2");
         }
-
-        String addresses = p.readString();
-        if (!TextUtils.isEmpty(addresses)) {
-            dataCall.addresses = addresses.split(" ");
-        }
-        p.readInt(); // RadioTechnology
-        p.readInt(); // inactiveReason
-
-        dataCall.dnses = new String[2];
-        dataCall.dnses[0] = SystemProperties.get("net."+dataCall.ifname+".dns1");
-        dataCall.dnses[1] = SystemProperties.get("net."+dataCall.ifname+".dns2");
 
         return dataCall;
     }
@@ -257,7 +282,8 @@ public class QualcommSharedRIL extends RIL implements CommandsInterface {
         dataCall.cid = 0; // Integer.parseInt(p.readString());
         p.readString();
         dataCall.ifname = p.readString();
-        if (TextUtils.isEmpty(dataCall.ifname)) {
+        if ((dataCall.status == DataConnection.FailCause.NONE.getErrorCode()) &&
+             TextUtils.isEmpty(dataCall.ifname) && dataCall.active != 0) {
             throw new RuntimeException(
                     "RIL_REQUEST_SETUP_DATA_CALL response, no ifname");
         }
@@ -308,10 +334,12 @@ public class QualcommSharedRIL extends RIL implements CommandsInterface {
         /**
           * If not using a USIM, ignore LTE mode and go to 3G
           */
-        if (!mUSIM && networkType == RILConstants.NETWORK_MODE_LTE_GSM_WCDMA) {
+        if (!mUSIM && networkType == RILConstants.NETWORK_MODE_LTE_GSM_WCDMA &&
+                 mSetPreferredNetworkType >= RILConstants.NETWORK_MODE_WCDMA_PREF) {
             networkType = RILConstants.NETWORK_MODE_WCDMA_PREF;
         }
         mSetPreferredNetworkType = networkType;
+
         super.setPreferredNetworkType(networkType, response);
     }
 
