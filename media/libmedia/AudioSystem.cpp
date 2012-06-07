@@ -196,7 +196,7 @@ String8 AudioSystem::getParameters(audio_io_handle_t ioHandle, const String8& ke
 // convert volume steps to natural log scale
 
 // change this value to change volume scaling
-static const float dBPerStep = 0.5f;
+static const float dBPerStep = 0.25f;
 // shouldn't need to touch these
 static const float dBConvert = -dBPerStep * 2.302585093f / 20.0f;
 static const float dBConvertInverse = 1.0f / dBConvert;
