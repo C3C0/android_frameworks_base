@@ -2516,6 +2516,12 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_REMINDERS_ONLY = "lockscreen_calendar_reminders_only";
 
         /**
+         * Whether to hide status bar
+         * @hide
+         */
+        public static final String HIDE_STATUS_BAR = "hide_status_bar";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
@@ -2594,6 +2600,7 @@ public final class Settings {
             QUIET_HOURS_STILL,
             QUIET_HOURS_DIM,
             KEYLAYOUT_OVERRIDES,
+            HIDE_STATUS_BAR,
         };
 
         // Settings moved to Settings.Secure

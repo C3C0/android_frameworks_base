@@ -10843,7 +10843,16 @@ public final class ActivityManagerService extends ActivityManagerNative
                 }
             }
         }
-        
+
+        // Quick hack to stop systemui to restart
+        // Thanks to dubidub@xda
+        if (r.shortName.startsWith("com.android.systemui"))
+        {
+            r.restartDelay += 13000000;
+            Slog.w(TAG, "changing scheduling restart for systemui: "
+                        + r.restartDelay + "ms");
+        }
+
         r.nextRestartTime = now + r.restartDelay;
         
         // Make sure that we don't end up restarting a bunch of services
