@@ -2993,6 +2993,12 @@ public final class Settings {
         public static final String PHONE_GOGGLES_OTHER_FILTERED = "phone_goggles_other_filtered";
 
         /**
+         * Whether to hide status bar
+         * @hide
+         */
+        public static final String HIDE_STATUS_BAR = "hide_status_bar";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          * @hide
@@ -3077,7 +3083,8 @@ public final class Settings {
             HAPTIC_TAP_ARRAY,
             HAPTIC_TAP_ARRAY_DEFAULT,
             LOCKSCREEN_GESTURES_SENSITIVITY,
-            LOCKSCREEN_GESTURES_COLOR
+            LOCKSCREEN_GESTURES_COLOR,
+            HIDE_STATUS_BAR
         };
 
         // Settings moved to Settings.Secure
