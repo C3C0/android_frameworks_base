@@ -2432,6 +2432,12 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
+         * Sets the lockscreen background style
+         * @hide
+         */
+        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
+
+        /**
          * Show the weather on the lock screen
          * @hide
          */
@@ -2520,6 +2526,12 @@ public final class Settings {
          * @hide
          */
         public static final String HIDE_STATUS_BAR = "hide_status_bar";
+
+        /**
+         * Show the pending notification counts as overlays on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_COUNT = "status_bar_notif_count";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
