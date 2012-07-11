@@ -2664,6 +2664,12 @@ public final class Settings {
         public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
 
         /**
+         * Add option to display the navigation bar
+         * @hide
+         */
+        public static final String KONSTA_NAVBAR = "konsta_navbar";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
