@@ -10843,7 +10843,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 }
             }
         }
-        
+
         r.nextRestartTime = now + r.restartDelay;
         
         // Make sure that we don't end up restarting a bunch of services

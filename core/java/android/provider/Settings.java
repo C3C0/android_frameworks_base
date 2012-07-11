@@ -2579,6 +2579,12 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_REMINDERS_ONLY = "lockscreen_calendar_reminders_only";
 
         /**
+         * Whether to hide status bar
+         * @hide
+         */
+        public static final String HIDE_STATUS_BAR = "hide_status_bar";
+
+        /**
          * Show the pending notification counts as overlays on the status bar
          * @hide
          */
@@ -2664,6 +2670,7 @@ public final class Settings {
             QUIET_HOURS_STILL,
             QUIET_HOURS_DIM,
             KEYLAYOUT_OVERRIDES,
+            HIDE_STATUS_BAR,
         };
 
         // Settings moved to Settings.Secure
