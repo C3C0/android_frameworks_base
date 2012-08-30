@@ -70,4 +70,8 @@ LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap3/liboverlay
 
 endif
 
+ifeq ($(VOLUME_BOOST),true)
+LOCAL_CFLAGS += -DVOLUME_BOOST
+endif
+
 include $(BUILD_SHARED_LIBRARY)
