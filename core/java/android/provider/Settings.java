@@ -1570,6 +1570,12 @@ public final class Settings {
         /** @hide */
         public static final int VOLUME_OVERLAY_NONE = 3;
 
+        /** Volume Adjust Sounds Enable, This is the noise made when using volume hard buttons
+        * Defaults to 1 - sounds enabled
+        * @hide
+        */
+        public static final String VOLUME_ADJUST_SOUNDS_ENABLED = "volume_adjust_sounds_enabled";
+
         /**
          * Ringer mode. This is used internally, changing this value will not
          * change the ringer mode. See AudioManager.
@@ -2287,6 +2293,18 @@ public final class Settings {
         public static final String NAV_BUTTONS = "nav_buttons";
 
         /**
+         * Duration of navigation bar glow animation turning on
+         * @hide
+         */
+        public static final String NAV_GLOW_DURATION_ON = "nav_glow_duration_on";
+
+        /**
+         * Duration of navigation bar glow animation turning off
+         * @hide
+         */
+        public static final String NAV_GLOW_DURATION_OFF = "nav_glow_duration_off";
+
+        /**
         * Notification Power Widget - Custom Brightness Mode
         * @hide
         */
@@ -2381,6 +2399,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_IME_SWITCHER = "status_bar_ime_switcher";
+
+        /**
+         * Whether to place the status bar at the bottom of the screen
+         * @hide
+         */
+
+        public static final String STATUS_BAR_BOTTOM = "status_bar_bottom";
 
         /**
          * Whether to use a separate delay for "slide to unlock" and security
@@ -2579,10 +2604,70 @@ public final class Settings {
         public static final String LOCKSCREEN_CALENDAR_REMINDERS_ONLY = "lockscreen_calendar_reminders_only";
 
         /**
+         * Whether to hide status bar
+         * @hide
+         */
+        public static final String HIDE_STATUS_BAR = "hide_status_bar";
+
+        /**
          * Show the pending notification counts as overlays on the status bar
          * @hide
          */
         public static final String STATUS_BAR_NOTIF_COUNT = "status_bar_notif_count";
+
+         /**
+          * Action to perform when the home key is long-pressed. (Default is 2)
+          * 0 - Nothing
+          * 1 - Menu
+          * 2 - App-switch
+          * 3 - Search
+          * 4 - Voice-search
+          * @hide
+          */
+         public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
+
+         /**
+          * Action to perform when the menu key is pressed. (Default is 1)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_MENU_ACTION = "key_menu_action";
+
+         /**
+          * Action to perform when the menu key is long-pressed.
+          * (Default is 0 on devices with a search key, 3 on devices without)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_MENU_LONG_PRESS_ACTION = "key_menu_long_press_action";
+
+         /**
+          * Action to perform when the search key is pressed. (Default is 3)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_SEARCH_ACTION = "key_search_action";
+
+         /**
+          * Action to perform when the search key is long-pressed. (Default is 4)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_SEARCH_LONG_PRESS_ACTION = "key_search_long_press_action";
+
+        /**
+         * Control the display of the action overflow button within app UI.
+         * 0 = use system default
+         * 1 = force on
+         * @hide
+         */
+        public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
+
+        /**
+         * Add option to display the navigation bar
+         * @hide
+         */
+        public static final String KONSTA_NAVBAR = "konsta_navbar";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -2664,6 +2749,7 @@ public final class Settings {
             QUIET_HOURS_STILL,
             QUIET_HOURS_DIM,
             KEYLAYOUT_OVERRIDES,
+            HIDE_STATUS_BAR,
         };
 
         // Settings moved to Settings.Secure

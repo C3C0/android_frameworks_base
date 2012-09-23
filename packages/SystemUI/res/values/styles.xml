@@ -118,5 +118,12 @@
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="BrightnessPanel">
+        <item name="android:windowAnimationStyle">@*android:style/Animation.VolumePanel</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
     
 </resources>
