@@ -2407,6 +2407,12 @@ public final class Settings {
 
         public static final String STATUS_BAR_BOTTOM = "status_bar_bottom";
 
+    /**
+         * Status Bar notification icon opacity
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_ICON_OPACITY = "status_bar_notif_icon_opacity";
+
         /**
          * Whether to use a separate delay for "slide to unlock" and security
          * lock
